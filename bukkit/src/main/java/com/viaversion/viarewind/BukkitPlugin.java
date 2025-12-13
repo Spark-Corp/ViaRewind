@@ -18,9 +18,12 @@
 package com.viaversion.viarewind;
 
 import com.viaversion.viarewind.api.ViaRewindPlatform;
+import com.viaversion.viarewind.protocol.v1_9to1_8.provider.InventoryProvider;
+import com.viaversion.viarewind.provider.BukkitInventoryProvider;
 import com.viaversion.viarewind.updater.AutoUpdater;
 import com.viaversion.viaversion.api.Via;
 import java.io.File;
+import com.viaversion.viaversion.api.platform.providers.ViaProviders;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -32,17 +35,14 @@ public class BukkitPlugin extends JavaPlugin implements ViaRewindPlatform {
     public BukkitPlugin() {
         Via.getManager().addEnableListener(() -> this.init(new File(getDataFolder(), "config.yml")));
     }
-
     @Override
     public void onLoad() {
         super.onLoad();
-
         autoUpdater = new AutoUpdater(super.getFile());
         autoUpdater.verify(Bukkit::shutdown);
-    }
 
-    @Override
-    public void onEnable() {
-        super.onEnable();
+        final ViaProviders providers = Via.getManager().getProviders();
+
+        providers.use(InventoryProvider.class, new BukkitInventoryProvider());
     }
 }
